@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docsfeedback.org/schema/v0/report.schema.json",
+  "title": "Docs Feedback Report",
+  "description": "Placeholder v0 schema. The full schema lands when docsfeedback.org goes live (TODO P0 #3).",
+  "type": "object",
+  "required": ["doc_url"],
+  "properties": {
+    "doc_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Canonical URL of the documentation page the report is about."
+    }
+  },
+  "additionalProperties": true
+}
