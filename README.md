@@ -16,8 +16,8 @@ npm install @fixyourdocs/sdk
 ```
 
 The SDKs live in [fixyourdocs/sdk-python](https://github.com/fixyourdocs/sdk-python)
-and [fixyourdocs/sdk-typescript](https://github.com/fixyourdocs/sdk-typescript)
-(initial scaffolding in place; implementations land per the v0 spec).
+and [fixyourdocs/sdk-typescript](https://github.com/fixyourdocs/sdk-typescript) —
+both implement the v0 spec and are published to PyPI and npm.
 
 ## Licence
 
