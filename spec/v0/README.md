@@ -2,7 +2,7 @@
 
 # Docs Feedback Protocol — v0
 
-**Status:** draft (`v0.1.0`).
+**Status:** draft (`v0.1.1`).
 **Editors:** the FixYourDocs project.
 **Repository:** <https://github.com/fixyourdocs/protocol>.
 **Canonical URL:** <https://docsfeedback.org/spec/v0>.
