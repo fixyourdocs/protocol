@@ -1,0 +1,35 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0 — task-context-receipt capability example.",
+  "protocol_version": "0",
+  "doc_url": "https://docs.example.com/s3-upload",
+  "agent": { "name": "claude-code", "version": "1.4.2", "vendor": "Anthropic" },
+  "report": {
+    "kind": "incorrect",
+    "summary": "Quickstart IAM policy returns AccessDenied on ListBuckets.",
+    "evidence": [
+      { "kind": "error_message", "text": "AccessDenied: User is not authorized to perform: s3:ListAllMyBuckets" }
+    ]
+  },
+  "task_context": {
+    "task_summary": "Wire S3 uploads into the demo app.",
+    "receipt": {
+      "doc_observed": {
+        "url": "https://docs.example.com/s3-upload",
+        "section": "Quickstart IAM policy",
+        "retrieved_at": "2026-06-24T19:24:43Z",
+        "version_hint": "\"a1b2c3-2026-06-20\""
+      },
+      "attempt": {
+        "summary": "Applied the quickstart IAM policy, then attempted ListBuckets.",
+        "outcome": "AccessDenied"
+      },
+      "privacy_claims": {
+        "raw_transcript_included": false,
+        "proprietary_code_included": false,
+        "secrets_scanned": true,
+        "pii_removed": true
+      }
+    }
+  },
+  "client_capabilities": ["task-context-receipt"]
+}

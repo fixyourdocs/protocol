@@ -2,7 +2,7 @@
 
 # Docs Feedback Protocol — v0
 
-**Status:** draft (`v0.1.1`).
+**Status:** draft (`v0.2.0`).
 **Editors:** the FixYourDocs project.
 **Repository:** <https://github.com/fixyourdocs/protocol>.
 **Canonical URL:** <https://docsfeedback.org/spec/v0>.
@@ -204,9 +204,10 @@ CommonMark.
 
 Clients MUST NOT include credentials, end-user PII, or proprietary
 source code from outside the documented project in any report field.
-Servers SHOULD apply a coarse secret-scanner pass on `details`,
-`evidence`, and `task_context.transcript_excerpt` and reject with `422`
-on hits.
+Servers SHOULD apply a coarse secret-scanner pass on `report.details`,
+`report.evidence`, `task_context.transcript_excerpt`, and the free-text
+fields of `task_context.receipt` (`attempt.summary`, `attempt.outcome`,
+`doc_observed.section`) and reject with `422` on hits.
 
 ### 4.5 Task context
 
@@ -222,6 +223,43 @@ on hits.
 OPTIONAL. If present, it explains what the agent was trying to do when
 the doc failed it. `transcript_excerpt` is for maintainer context only
 and MUST be redacted by the client.
+
+#### 4.5.1 Structured context receipt (capability `task-context-receipt`)
+
+`task_context.receipt` is an OPTIONAL structured alternative to
+`transcript_excerpt`. It captures the minimum a maintainer needs to
+reproduce and triage — which doc was consulted, what the agent attempted,
+the outcome — without making a raw transcript the default evidence format.
+
+Both fields are supported, and a client MAY send either or both. New
+integrations SHOULD prefer `receipt` where it fits: it bounds what leaves the
+client and keeps a raw transcript from being the default evidence format.
+`transcript_excerpt` is **not deprecated** — it remains fully supported for
+context the structured fields cannot capture. Any future change to its status
+will follow the protocol's normal deprecation process, and its removal could
+occur only at a major version; it will not be removed within `v0.x`.
+
+A client MUST NOT populate `receipt` unless it also lists
+`task-context-receipt` in `client_capabilities`. A server that supports the
+field MUST advertise `task-context-receipt` in `server_capabilities` (§7.2,
+§8). A client SHOULD only send `receipt` to a server it has seen advertise
+the token; a client that sends it optimistically MUST be prepared for
+`400 validation_error` from a server on an older schema and MUST retry the
+submission without `receipt`.
+
+- `doc_observed` (REQUIRED `url`) identifies the page the agent actually read.
+  `version_hint` is an opaque marker (ETag, Last-Modified, git SHA, or a
+  published doc version); servers MUST NOT parse it and use it only for
+  staleness triage and dedup.
+- `attempt` records what the agent did (`summary`) and how it ended
+  (`outcome`, e.g. `"AccessDenied"`).
+- `privacy_claims` carries client-asserted flags. These are **self-reported
+  and unverified**: a server MUST NOT treat `secrets_scanned: true` (or any
+  flag) as a guarantee, and the §4.4 / §9 obligation to strip secrets, PII,
+  and proprietary code still applies in full regardless of what the flags say.
+
+`receipt` does not change the §6 idempotency default, which keys on `doc_url`
+(not `doc_observed.url`).
 
 ## 5. Discovery: opt-in and opt-out
 
@@ -473,16 +511,20 @@ this repository.
 
 ## 11. Examples
 
-See [`examples/`](examples/) for three canonical examples:
+See [`examples/`](examples/) for canonical examples:
 
 - [`minimum-required.json`](examples/minimum-required.json) — the
   smallest valid v0 report.
 - [`golden-path.json`](examples/golden-path.json) — a typical report
   with evidence and a suggested fix.
 - [`full.json`](examples/full.json) — every optional field populated.
+- [`context-receipt.json`](examples/context-receipt.json) — a report
+  using `task_context.receipt` with the `task-context-receipt`
+  capability (§4.5.1).
 
-The known-bad [`invalid.json`](examples/invalid.json) is included as a
-negative test for tooling.
+The known-bad [`invalid.json`](examples/invalid.json) and
+[`invalid-context-receipt.json`](examples/invalid-context-receipt.json)
+are included as negative tests for tooling.
 
 ## 12. Conformance
 

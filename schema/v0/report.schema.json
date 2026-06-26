@@ -113,6 +113,52 @@
           "description": "Optional redacted excerpt of the agent's transcript or scratchpad. Agents MUST strip secrets and user PII before submission.",
           "type": "string",
           "maxLength": 4000
+        },
+        "receipt": {
+          "description": "Structured, low-leakage alternative to transcript_excerpt: the doc the agent observed, what it attempted, the outcome, and client-asserted privacy claims. Gated by the `task-context-receipt` capability token (§8). Clients populating this field MUST include that token in client_capabilities. A v0 server that does not advertise the token MAY reject the body with 400; see §4.5.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["doc_observed"],
+          "properties": {
+            "doc_observed": {
+              "description": "The specific documentation the agent actually consulted.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["url"],
+              "properties": {
+                "url":     { "type": "string", "format": "uri", "maxLength": 2048 },
+                "section": { "type": "string", "maxLength": 200 },
+                "retrieved_at": {
+                  "description": "RFC 3339 timestamp of when the client read the doc.",
+                  "type": "string", "format": "date-time"
+                },
+                "version_hint": {
+                  "description": "Opaque version marker the client observed: ETag, Last-Modified, a git SHA, or a published doc version. Free-form; servers MUST NOT parse it.",
+                  "type": "string", "maxLength": 256
+                }
+              }
+            },
+            "attempt": {
+              "description": "What the agent did with the doc and how it turned out.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "summary": { "type": "string", "maxLength": 500 },
+                "outcome": { "type": "string", "maxLength": 500 }
+              }
+            },
+            "privacy_claims": {
+              "description": "Client-ASSERTED, server-UNVERIFIED privacy claims. A server MUST NOT treat any flag as a guarantee; it is a self-report for maintainer context only. An absent flag means 'not asserted', not 'false'.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "raw_transcript_included":   { "type": "boolean" },
+                "proprietary_code_included": { "type": "boolean" },
+                "secrets_scanned":           { "type": "boolean" },
+                "pii_removed":               { "type": "boolean" }
+              }
+            }
+          }
         }
       }
     },
