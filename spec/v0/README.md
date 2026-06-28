@@ -67,8 +67,12 @@ These are reserved for a future v0.x or v1.
   HTTP request. The client is usually the agent itself; it MAY be a
   separate tool acting on the agent's behalf (e.g. an MCP server or
   CLI).
-- **Doc URL.** The HTTPS URL of the documentation page the report is
-  about.
+- **Doc URL.** The HTTPS URL of the documentation the report is about.
+  This is usually a published documentation page, but it may instead be
+  a source-hosting URL for the document — for example a repository file
+  view such as `https://github.com/<owner>/<repo>/blob/HEAD/<path>`. How
+  a server maps a doc URL to a destination is out of scope (§2); a server
+  may route a source-hosting URL by its repository path.
 - **Receiving organisation.** The party that publishes the doc URL.
 - **Endpoint.** An HTTPS URL that accepts `POST /v1/reports` on behalf
   of one or more receiving organisations.
@@ -280,6 +284,16 @@ Discovery results MAY be cached for up to 24 hours, keyed by host. A
 client that caches MUST honour an `opt_in: false` cache hit even after
 the underlying document changes, until the cache entry expires.
 
+> **Note (informational).** Some doc URLs share a host that no single
+> receiving organisation can publish a well-known document on — for
+> example a source host like `github.com`, where a per-host
+> `/.well-known/docs-feedback.json` is not something an individual
+> repository owner controls. Discovery for such URLs simply falls
+> through to step 4, and the report reaches the client's configured
+> default hub, which can route it by the URL's repository path. This is
+> a property of step 4, not a new rule, and works against any hub the
+> client is configured to use.
+
 ### 5.3 In-page hint (informational)
 
 Pages MAY include an HTML meta tag as a hint for clients that have
@@ -480,6 +494,9 @@ See [`examples/`](examples/) for three canonical examples:
 - [`golden-path.json`](examples/golden-path.json) — a typical report
   with evidence and a suggested fix.
 - [`full.json`](examples/full.json) — every optional field populated.
+- [`repo-file.json`](examples/repo-file.json) — a report whose
+  `doc_url` is a repository file view
+  (`github.com/<owner>/<repo>/blob/HEAD/<path>`); see §3 and §5.2.
 
 The known-bad [`invalid.json`](examples/invalid.json) is included as a
 negative test for tooling.
