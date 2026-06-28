@@ -1,0 +1,14 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0 — report whose doc_url is a repository file view; a server may route it by repository path (§3, §5.2).",
+  "protocol_version": "0",
+  "doc_url": "https://github.com/fyd-demo-maintainer/demo-libraryx/blob/HEAD/README.md",
+  "agent": {
+    "name": "claude-code"
+  },
+  "report": {
+    "kind": "outdated",
+    "summary": "The README install snippet pins a version that no longer exists.",
+    "details": "README.md step 1 installs `demo-libraryx@1.2.0`, but 1.2.0 was yanked and the lowest published release is now 2.0.0, so the quickstart fails at install."
+  },
+  "submitted_at": "2026-06-28T10:00:00Z"
+}
